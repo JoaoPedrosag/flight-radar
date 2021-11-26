@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon"
+          type="image/png"
+          href="client/assets/favicon.png" />
+    <title>Flight Radar ✈</title>
+    <base href="/">
+    <style>
+      canvas {
+        background: #eee;
+      }
+
+      .display-inherit {
+        display: inherit;
+      }
+
+    </style>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://cdn.rawgit.com/tonystar/bootstrap-float-label/v4.0.1/dist/bootstrap-float-label.min.css">
+
+    <style>
+      .airship-row-selected {
+        background-color: rgba(0, 0, 0, 0.075);
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-3">
+  <div class="col">
+    <div class="shadow bg-light rounded">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active"
+             href="#transformation"
+             role="tab"
+             data-toggle="tab">Transformações</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"
+             href="#tracker"
+             role="tab"
+             data-toggle="tab">Rastreamento</a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div role="tabpanel"
+     class="tab-pane active"
+     id="transformation">
+  <div class="p-3 mb-5">
+    <form id="transladar"
+          class="form-inline mb-3 row">
+      <div class="col-12 mb-3 display-inherit">
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control mr-1"
+                   id="transladar-x">
+          </div>
+          <label for="transladar-x">X</label>
+        </span>
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control mr-1"
+                   id="transladar-y">
+          </div>
+          <label for="transladar-y">Y</label>
+        </span>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-primary auto-disabled"
+                disabled>Transladar</button>
+      </div>
+    </form>
+    <hr>
+    <form id="escalonar"
+          class="form-inline mb-3 row">
+      <div class="col-12 mb-3 display-inherit">
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="escalonar-x">
+          </div>
+          <label for="escalonar-x">X</label>
+        </span>
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="escalonar-y">
+          </div>
+          <label for="escalonar-y">Y</label>
+        </span>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-primary auto-disabled"                
+                disabled>Escalonar</button>
+      </div>
+    </form>
+    <hr>
+    <form id="rotacionar"
+          class="form-inline mb-3 row">
+      <div class="col-12 mb-3 display-inherit">
+        <span class="has-float-label">
+          <input type="text"
+                 class="form-control mr-1"
+                 id="rotacionar-angulo">
+          <label for="rotacionar-angulo">Ângulo</label>
+        </span>
+      </div>
+      <div class="col-12 mb-3 display-inherit">
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control mr-1"
+                   id="rotacionar-x">
+          </div>
+          <label for="rotacionar-x">Centro - X</label>
+        </span>
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control mr-1"
+                   id="rotacionar-y">
+          </div>
+          <label for="rotacionar-y">Centro - Y</label>
+        </span>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-primary auto-disabled"
+                disabled>Rotacionar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+        <div role="tabpanel"
+     class="tab-pane"
+     id="tracker">
+  <div class="p-3 mb-5">
+    <form onsubmit="return false"
+          id="form-min-distance-airport"
+          class="form-inline mb-3 row">
+      <div class="col-12 mb-3">
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="number"
+                   class="form-control"
+                   value="1"
+                   min="1"
+                   id="min-distance-airport">
+            <div class="input-group-append">
+              <span class="input-group-text">km</span>
+            </div>
+          </div>
+          <label for="min-distance-airport">Distância mínima Aeroporto</label>
+        </span>
+      </div>
+    </form>
+    <hr>
+    <form onsubmit="return false"
+          class="form-inline mb-3 row">
+      <div class="col-12 mb-3">
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="number"
+                   class="form-control"
+                   value="2"
+                   min="2"
+                   id="min-distance-airships">
+            <div class="input-group-append">
+              <span class="input-group-text">km</span>
+            </div>
+          </div>
+          <label for="min-distance-airships">Distância mínima</label>
+        </span>
+      </div>
+    </form>
+    <hr>
+    <form onsubmit="return false"
+          class="form-inline mb-3 row">
+      <div class="col-12 mb-3">
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="number"
+                   class="form-control"
+                   id="min-time-to-danger"
+                   min="10"
+                   value="10">
+            <div class="input-group-append">
+              <span class="input-group-text">segundos</span>
+            </div>
+          </div>
+          <label for="min-time-to-danger">Tempo mínimo</label>
+        </span>
+      </div>
+    </form>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="shadow bg-light rounded">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active"
+             href="#inserir-aviao"
+             role="tab"
+             data-toggle="tab">Inserir Avião</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"
+             href="#modificar-aviao"
+             role="tab"
+             data-toggle="tab">Modificar Avião</a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div role="tabpanel"
+     class="tab-pane active"
+     id="inserir-aviao">
+  <div class="p-3">
+    <button class="btn btn-primary"
+            style="width: 100%;"
+            id="add-random-airship">Inserir avião aleatório</button>
+  </div>
+  <div class="p-3">
+    <form id="inserir-cart"
+          class="form-inline row">
+
+      <div class="col-12 mb-3 display-inherit">
+        <span class="has-float-label mr-2">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="inserir-x"
+                   value="0">
+          </div>
+          <label for="inserir-x">X</label>
+        </span>
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="inserir-y"
+                   value="0">
+          </div>
+          <label for="inserir-y">Y</label>
+        </span>
+      </div>
+
+      <div class="col-12 mb-3 display-inherit">
+        <span class="has-float-label mr-2">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="inserir-velocidade"
+                   value="0">
+            <div class="input-group-append">
+              <span class="input-group-text">km/h</span>
+            </div>
+          </div>
+          <label for="inserir-velocidade">Velocidade</label>
+        </span>
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control mr-1"
+                   id="inserir-direcao"
+                   value="0">
+          </div>
+          <label for="inserir-direcao">Direção</label>
+        </span>
+      </div>
+
+      <div class="col-12">
+        <button class="btn btn-primary">Inserir</button>
+      </div>
+    </form>
+  </div>
+  <hr>
+  <div class="p-3 mb-5">
+    <form id="inserir-polar"
+          class="form-inline mb-3 row">
+
+      <div class="col-12 mb-3 display-inherit">
+        <span class="has-float-label mr-2">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="inserir-raio"
+                   value="0">
+            <div class="input-group-append">
+              <span class="input-group-text">km</span>
+            </div>
+          </div>
+          <label for="inserir-raio">Raio</label>
+        </span>
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="inserir-angulo"
+                   value="0">
+          </div>
+          <label for="inserir-angulo">Ângulo</label>
+        </span>
+      </div>
+
+      <div class="col-12 mb-3 display-inherit">
+        <span class="has-float-label mr-2">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="inserir-polar-velocidade"
+                   value="0">
+            <div class="input-group-append">
+              <span class="input-group-text">km/h</span>
+            </div>
+          </div>
+          <label for="inserir-polar-velocidade">Velocidade</label>
+        </span>
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control mr-1"
+                   id="inserir-polar-direcao"
+                   value="0">
+          </div>
+          <label for="inserir-polar-direcao">Direção</label>
+        </span>
+      </div>
+
+      <div class="col-12">
+        <button class="btn btn-primary">Inserir</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+        <div role="tabpanel"
+     class="tab-pane"
+     id="modificar-aviao">
+  <div class="p-3">
+    <form id="modificar-cart"
+          class="form-inline row">
+      <div class="col-12 mb-3 display-inherit">
+        <span class="has-float-label mr-2">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="modificar-x"
+                   value="0">
+          </div>
+          <label for="modificar-x">X</label>
+        </span>
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="modificar-y"
+                   value="0">
+          </div>
+          <label for="modificar-y">Y</label>
+        </span>
+      </div>
+
+      <div class="col-12 mb-3 display-inherit">
+        <span class="has-float-label mr-2">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="modificar-velocidade"
+                   value="0">
+            <div class="input-group-append">
+              <span class="input-group-text">km/h</span>
+            </div>
+          </div>
+          <label for="modificar-velocidade">Velocidade</label>
+        </span>
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control mr-1"
+                   id="modificar-direcao"
+                   value="0">
+          </div>
+          <label for="modificar-direcao">Direção</label>
+        </span>
+      </div>
+
+
+      <div class="col-12">
+        <button class="btn btn-primary auto-disabled"
+                disabled>Modificar</button>
+      </div>
+    </form>
+  </div>
+  <hr>
+  <div class="p-3 mb-5">
+    <form id="modificar-polar"
+          class="form-inline mb-3 row">
+      <div class="col-12 mb-3 display-inherit">
+        <span class="has-float-label mr-2">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="modificar-raio"
+                   value="0">
+            <div class="input-group-append">
+              <span class="input-group-text">km</span>
+            </div>
+          </div>
+          <label for="modificar-raio">Raio</label>
+        </span>
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="modificar-angulo"
+                   value="0">
+          </div>
+          <label for="modificar-angulo">Ângulo</label>
+        </span>
+      </div>
+
+
+      <div class="col-12 mb-3 display-inherit">
+        <span class="has-float-label mr-2">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   id="modificar-polar-velocidade"
+                   value="0">
+            <div class="input-group-append">
+              <span class="input-group-text">km/h</span>
+            </div>
+          </div>
+          <label for="modificar-polar-velocidade">Velocidade</label>
+        </span>
+        <span class="has-float-label">
+          <div class="input-group">
+            <input type="text"
+                   class="form-control mr-1"
+                   id="modificar-polar-direcao"
+                   value="0">
+          </div>
+          <label for="modificar-polar-direcao">Direção</label>
+        </span>
+      </div>
+
+
+      <div class="col-12">
+        <button class="btn btn-primary auto-disabled"
+                disabled>Modificar</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+      </div>
+    </div>
+  </div>
+</div>
+        <div class="col-5" style="display: flex;flex-direction: column;align-items: center;">
+  <canvas id="myCanvas"
+          width="600"
+          height="600"></canvas>
+  <div class="col" style="display: none;">
+    <div class="shadow bg-light rounded">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active"
+             href="#visualizacoes"
+             role="tab"
+             data-toggle="tab">Visualizações</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"
+             href="#informacoes"
+             role="tab"
+             data-toggle="tab">Informações</a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div role="tabpanel"
+     class="tab-pane active"
+     id="visualizacoes">
+  <div class="pb-2 mb-5">
+    <form>
+      <div class="col-12 mb-3 col">
+        <div class="col-12 form-check">
+          <input id="draw-grid"
+                 type="checkbox"
+                 class="form-check-input"
+                 checked>
+          <label class="form-check-label"
+                 for="draw-grid">Plano cartesiano</label>
+        </div>
+        <div class="col-12 form-check">
+          <input id="draw-polar"
+                 type="checkbox"
+                 class="form-check-input"
+                 checked>
+          <label class="form-check-label"
+                 for="draw-polar">Plano polar</label>
+        </div>
+        <div class="col-12 form-check">
+          <input id="draw-airships"
+                 type="checkbox"
+                 class="form-check-input"
+                 checked>
+          <label class="form-check-label"
+                 for="draw-airships">Aviões</label>
+        </div>
+        <div class="col-12 form-check">
+          <input id="draw-airships-guidelines"
+                 type="checkbox"
+                 class="form-check-input">
+          <label class="form-check-label"
+                 for="draw-airships-guidelines">Linha de segurança dos aviões</label>
+        </div>
+        <div class="col-12 form-check">
+          <input id="draw-airships-vision"
+                 type="checkbox"
+                 class="form-check-input">
+          <label class="form-check-label"
+                 for="draw-airships-vision">Campo de visão dos aviões</label>
+        </div>
+        <div class="col-12 form-check">
+          <input id="animate-airships"
+                 type="checkbox"
+                 class="form-check-input">
+          <label class="form-check-label"
+                 for="animate-airships">Animações dos aviões</label>
+        </div>
+        <div class="col-12 form-check">
+          <input id="bounce"
+                 type="checkbox"
+                 class="form-check-input">
+          <label class="form-check-label"
+                 for="bounce">Aviões rebaterem nas paredes</label>
+        </div>
+        <div class="col-12 form-check">
+          <input id="may-track"
+                 type="checkbox"
+                 class="form-check-input"
+                 checked>
+          <label class="form-check-label"
+                 for="may-track">Funções de rastreamento</label>
+        </div>
+        <div class="col-12 form-check">
+          <input id="should-teleport-to"
+                 type="checkbox"
+                 class="form-check-input"
+                 checked>
+          <label class="form-check-label"
+                 for="should-teleport-to">Teleportar o avião para o ponto</label>
+        </div>
+        <div class="col-12 form-check">
+          <input id="should-avoid-collision"
+                 type="checkbox"
+                 class="form-check-input">
+          <label class="form-check-label"
+                 for="should-avoid-collision">Meia Inteligência Meio Artificial</label>
+        </div>
+        <hr>
+        <div class="col-12 form-check">
+          <label class="form-check-label"
+                 for="airship-scale">Escala dos aviões</label>
+          <div class="row">
+            <div class="col-1">1</div>
+            <div class="col-10" style="padding-top: 0.3em;">
+              <input id="airship-scale" type="range" min="1" max="10" step="1" value="1" class="form-control-range"> 
+            </div>
+            <div class="col-1">10</div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+        <div role="tabpanel"
+     class="tab-pane"
+     id="informacoes">
+  <div class="p-3 mb-5" style="
+    display: flex;
+    align-items: center;
+    justify-content: center;" id="app-status">
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+</div>
+        <div class="col-4">
+  <div class="col"
+     id="right-col">
+  <div class="shadow p-3 mb-5 rounded bg-light">
+    <table class="table table-sm table-hover"
+           style="font-size: 12px">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Posição</th>
+          <th>Polar</th>
+          <th>Direção</th>
+          <th>Velocidade (Km/h)</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+      </div>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+              integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+              crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+              integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+              crossorigin="anonymous"></script>
+    </div>
+  <script type="text/javascript" src="./main.js"></script></body>
+
+</html>
